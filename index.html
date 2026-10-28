@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio en la nube | Gestor de Presets Vocales y Sesiones de Audio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="rack-topbar">
+    <div class="topbar-inner">
+      <div class="status-group">
+        <span id="led-online" class="led-indicator" title="Estado de enlace API"></span>
+        <span class="rack-unit-id">STUDIO &amp; LIVE RACK // VERCEL + RENDER + NEON PG</span>
+      </div>
+      <span id="badge-estado" class="status-badge">LISTO PARA CONSULTA</span>
+    </div>
+  </header>
+
+  <div class="workspace-container">
+    <!-- Contenedor obligatorio por la guía oficial del laboratorio -->
+    <main class="card">
+      <div class="card-header">
+        <div>
+          <span class="section-tag">EVIDENCIA OFICIAL DE CONEXIÓN HTTP</span>
+          <h1>Laboratorio de despliegue</h1>
+          <p class="subtitle">Frontend publicado en Vercel &bull; Gestor de Presets Vocales y Sesiones de Audio</p>
+        </div>
+        <button id="consultar" class="btn-primary" type="button">
+          Consultar backend y cargar Presets
+        </button>
+      </div>
+
+      <pre id="resultado">Presione el botón para consultar la API.</pre>
+    </main>
+
+    <!-- Interfaz funcional del Gestor de Presets de Audio -->
+    <section class="dashboard-layout">
+      <!-- Módulo de Registro de Nuevo Preset -->
+      <aside class="card module-card">
+        <div class="module-title-bar">
+          <h2>NUEVO PRESET DE AUDIO</h2>
+          <span class="rack-screw"></span>
+        </div>
+
+        <form id="form-preset" class="preset-form">
+          <div class="form-field">
+            <label for="cancion">Nombre de Canción / Evento</label>
+            <input
+              type="text"
+              id="cancion"
+              name="cancion"
+              placeholder="Ej. Quizás (Cover Reggae)"
+              maxlength="100"
+              required
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="estilo">Estilo / Entorno</label>
+            <input
+              type="text"
+              id="estilo"
+              name="estilo"
+              placeholder="Ej. Estudio / arreglo vocal, Live Mixing..."
+              maxlength="50"
+              required
+            >
+          </div>
+
+          <div class="form-field">
+            <label for="cadena_audio">Cadena de Audio / Ruteo / Plugins</label>
+            <input
+              type="text"
+              id="cadena_audio"
+              name="cadena_audio"
+              placeholder="Ej. HPF 85Hz | Compresor CLA-2A (-4dB GR) | Reverb Plate 1.8s"
+              required
+            >
+            <small class="field-hint">Separa cada eslabón o procesador con el símbolo <code>|</code></small>
+          </div>
+
+          <div class="form-field">
+            <label for="notas">Notas técnicas</label>
+            <textarea
+              id="notas"
+              name="notas"
+              rows="3"
+              placeholder="Ej. Tempo más lento, cuidar sibilancias en armonías y coros."
+            ></textarea>
+          </div>
+
+          <button type="submit" id="btn-guardar" class="btn-primary btn-full">
+            Guardar Preset
+          </button>
+          <p id="estado-formulario" class="form-feedback" aria-live="polite"></p>
+        </form>
+      </aside>
+
+      <!-- Cuadrícula de Presets en Base de Datos -->
+      <section class="card module-card">
+        <div class="module-title-bar">
+          <h2>RACK DE PRESETS ALMACENADOS (<span id="contador-presets">0</span>)</h2>
+          <span class="rack-screw"></span>
+        </div>
+
+        <div id="grid-presets" class="presets-grid">
+          <div class="empty-state">
+            <p>Sin presets sincronizados en pantalla.</p>
+            <small>Presiona <strong>"Consultar backend y cargar Presets"</strong> arriba para traer los datos desde Render y PostgreSQL.</small>
+          </div>
+        </div>
+      </section>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
