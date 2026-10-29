@@ -25,7 +25,7 @@ function renderizarCadenaAudio(cadena) {
     .filter(Boolean);
 
   return bloques
-    .map((bloque) => `<span class="signal-tag">${escaparHtml(bloque)}</span>`)
+    .map((bloque) => `<span class="chain-pill">${escaparHtml(bloque)}</span>`)
     .join('');
 }
 
@@ -41,13 +41,15 @@ function formatearFecha(fechaIso) {
 }
 
 function renderizarPresets(lista = []) {
-  contadorPresets.textContent = String(lista.length);
+  if (contadorPresets) {
+    contadorPresets.textContent = String(lista.length);
+  }
 
   if (lista.length === 0) {
     gridPresets.innerHTML = `
       <div class="empty-state">
-        <p>No hay presets registrados en la base de datos.</p>
-        <small>Usa el formulario para crear el primer preset de audio.</small>
+        <p>Aún no hay presets guardados en la base de datos.</p>
+        <small>Utiliza el formulario de la izquierda para registrar el primero.</small>
       </div>
     `;
     return;
@@ -57,26 +59,28 @@ function renderizarPresets(lista = []) {
     .map(
       (preset) => `
       <article class="preset-item">
-        <div>
-          <div class="preset-header">
-            <h3 class="preset-song">${escaparHtml(preset.cancion)}</h3>
-            <span class="preset-style-badge">${escaparHtml(preset.estilo || 'General')}</span>
-          </div>
-          <div class="signal-tags" style="margin-top: 0.65rem;">
-            ${renderizarCadenaAudio(preset.cadena_audio)}
-          </div>
-          ${
-            preset.notas
-              ? `<p class="preset-notes" style="margin-top: 0.65rem;">${escaparHtml(preset.notas)}</p>`
-              : ''
-          }
+        <div class="preset-top">
+          <h4 class="preset-song">${escaparHtml(preset.cancion)}</h4>
+          <span class="preset-badge">${escaparHtml(preset.estilo || 'Vocal')}</span>
         </div>
-        <div class="preset-footer">
-          <span>ID #${escaparHtml(String(preset.id))} &bull; ${escaparHtml(formatearFecha(preset.fecha))}</span>
+
+        <div class="chain-pills">
+          ${renderizarCadenaAudio(preset.cadena_audio)}
+        </div>
+
+        ${
+          preset.notas
+            ? `<p class="preset-notes">${escaparHtml(preset.notas)}</p>`
+            : ''
+        }
+
+        <div class="preset-meta">
+          <span class="preset-date">${escaparHtml(formatearFecha(preset.fecha))}</span>
           <button
             type="button"
             class="btn-delete"
             data-id="${escaparHtml(String(preset.id))}"
+            title="Eliminar preset"
           >
             Eliminar
           </button>
@@ -88,7 +92,7 @@ function renderizarPresets(lista = []) {
 }
 
 async function consultarAPI() {
-  resultadoPre.textContent = 'Consultando...';
+  resultadoPre.textContent = 'Consultando backend en Render...';
   btnConsultar.disabled = true;
 
   try {
@@ -96,18 +100,18 @@ async function consultarAPI() {
     if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
     const datos = await respuesta.json();
 
-    // Evidencia obligatoria de la guía en <pre id="resultado">
+    // Salida obligatoria para la evidencia del laboratorio
     resultadoPre.textContent = JSON.stringify(datos, null, 2);
 
-    // Renderizado visual en #grid-presets
+    // Renderizar tarjetas visuales
     renderizarPresets(datos.presets || []);
 
-    ledOnline.classList.remove('offline');
-    badgeEstado.textContent = 'ONLINE // CONECTADO';
+    if (ledOnline) ledOnline.classList.remove('offline');
+    if (badgeEstado) badgeEstado.textContent = 'En línea';
   } catch (error) {
-    resultadoPre.textContent = 'No se pudo consultar la API: ' + error.message;
-    ledOnline.classList.add('offline');
-    badgeEstado.textContent = 'ERROR DE CONEXIÓN';
+    resultadoPre.textContent = 'No se pudo consultar la API:\n' + error.message;
+    if (ledOnline) ledOnline.classList.add('offline');
+    if (badgeEstado) badgeEstado.textContent = 'Sin conexión';
   } finally {
     btnConsultar.disabled = false;
   }
@@ -127,8 +131,8 @@ formPreset.addEventListener('submit', async (evento) => {
   };
 
   btnGuardar.disabled = true;
-  estadoFormulario.className = 'form-feedback';
-  estadoFormulario.textContent = 'Guardando preset en PostgreSQL...';
+  estadoFormulario.className = 'form-message';
+  estadoFormulario.textContent = 'Guardando en la base de datos...';
 
   try {
     const respuesta = await fetch(`${BASE_URL}/api/presets`, {
@@ -142,10 +146,10 @@ formPreset.addEventListener('submit', async (evento) => {
     }
 
     formPreset.reset();
-    estadoFormulario.textContent = '✓ Preset guardado exitosamente.';
+    estadoFormulario.textContent = '✓ Preset guardado correctamente.';
     await consultarAPI();
   } catch (error) {
-    estadoFormulario.className = 'form-feedback error';
+    estadoFormulario.className = 'form-message error';
     estadoFormulario.textContent = 'Error al guardar: ' + error.message;
   } finally {
     btnGuardar.disabled = false;
@@ -177,4 +181,9 @@ gridPresets.addEventListener('click', async (evento) => {
     botonEliminar.disabled = false;
     botonEliminar.textContent = 'Eliminar';
   }
+});
+
+// Sincronización automática suave inicial al cargar la página
+window.addEventListener('DOMContentLoaded', () => {
+  consultarAPI();
 });

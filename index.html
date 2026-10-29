@@ -2,116 +2,146 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Laboratorio en la nube | Gestor de Presets Vocales y Sesiones de Audio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Gestor de Presets Vocales y Sesiones de Audio</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="rack-topbar">
-    <div class="topbar-inner">
-      <div class="status-group">
-        <span id="led-online" class="led-indicator" title="Estado de enlace API"></span>
-        <span class="rack-unit-id">STUDIO &amp; LIVE RACK // VERCEL + RENDER + NEON PG</span>
+  <!-- Barra superior neumórfica -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v20M17 5v14M7 9v6M2 12h2M20 12h2"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">AudioPresets</h1>
+          <p class="brand-subtitle">Gestor de cadenas vocales y sesiones</p>
+        </div>
       </div>
-      <span id="badge-estado" class="status-badge">LISTO PARA CONSULTA</span>
+
+      <div class="system-status">
+        <span id="led-online" class="status-dot"></span>
+        <span id="badge-estado" class="status-label">Servicio listo</span>
+      </div>
     </div>
   </header>
 
-  <div class="workspace-container">
-    <!-- Contenedor obligatorio por la guía oficial del laboratorio -->
-    <main class="card">
-      <div class="card-header">
+  <div class="app-layout">
+    <!-- Módulo 1: Consulta de API (Laboratorio de Despliegue) -->
+    <main class="card lab-panel">
+      <div class="panel-head">
         <div>
-          <span class="section-tag">EVIDENCIA OFICIAL DE CONEXIÓN HTTP</span>
-          <h1>Laboratorio de despliegue</h1>
-          <p class="subtitle">Frontend publicado en Vercel &bull; Gestor de Presets Vocales y Sesiones de Audio</p>
+          <span class="pill-tag">Integración Cloud</span>
+          <h2 class="panel-title">Laboratorio de despliegue</h2>
+          <p class="panel-desc">Prueba de conexión HTTP directa entre Vercel, Render y PostgreSQL (Neon).</p>
         </div>
-        <button id="consultar" class="btn-primary" type="button">
-          Consultar backend y cargar Presets
+        <button id="consultar" class="neu-btn neu-btn-primary" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span>Consultar backend</span>
         </button>
       </div>
 
-      <pre id="resultado">Presione el botón para consultar la API.</pre>
+      <div class="terminal-wrapper">
+        <div class="terminal-bar">
+          <span class="terminal-title">Respuesta JSON de la API</span>
+        </div>
+        <pre id="resultado">Presione el botón para consultar la API.</pre>
+      </div>
     </main>
 
-    <!-- Interfaz funcional del Gestor de Presets de Audio -->
-    <section class="dashboard-layout">
-      <!-- Módulo de Registro de Nuevo Preset -->
-      <aside class="card module-card">
-        <div class="module-title-bar">
-          <h2>NUEVO PRESET DE AUDIO</h2>
-          <span class="rack-screw"></span>
+    <!-- Módulo 2 y 3: Formulario y Lista de Presets -->
+    <div class="workspace-grid">
+      <!-- Formulario para agregar preset -->
+      <section class="card form-panel">
+        <div class="card-header">
+          <h3 class="section-title">Nuevo preset</h3>
+          <p class="section-desc">Guarda la cadena de efectos y ruteo para tu sesión.</p>
         </div>
 
-        <form id="form-preset" class="preset-form">
-          <div class="form-field">
-            <label for="cancion">Nombre de Canción / Evento</label>
+        <form id="form-preset" class="neu-form">
+          <div class="field-group">
+            <label for="cancion">Canción o proyecto</label>
             <input
               type="text"
               id="cancion"
               name="cancion"
+              class="neu-input"
               placeholder="Ej. Quizás (Cover Reggae)"
               maxlength="100"
               required
             >
           </div>
 
-          <div class="form-field">
-            <label for="estilo">Estilo / Entorno</label>
+          <div class="field-group">
+            <label for="estilo">Estilo vocal o entorno</label>
             <input
               type="text"
               id="estilo"
               name="estilo"
-              placeholder="Ej. Estudio / arreglo vocal, Live Mixing..."
+              class="neu-input"
+              placeholder="Ej. Voz líder, Acústico, Directo..."
               maxlength="50"
               required
             >
           </div>
 
-          <div class="form-field">
-            <label for="cadena_audio">Cadena de Audio / Ruteo / Plugins</label>
+          <div class="field-group">
+            <label for="cadena_audio">Cadena de procesamiento</label>
             <input
               type="text"
               id="cadena_audio"
               name="cadena_audio"
-              placeholder="Ej. HPF 85Hz | Compresor CLA-2A (-4dB GR) | Reverb Plate 1.8s"
+              class="neu-input"
+              placeholder="Ej. De-Esser | Compresor 1176 | Plate Reverb"
               required
             >
-            <small class="field-hint">Separa cada eslabón o procesador con el símbolo <code>|</code></small>
+            <span class="input-hint">Tip: Separa cada procesador o plugin con una barra vertical (|)</span>
           </div>
 
-          <div class="form-field">
-            <label for="notas">Notas técnicas</label>
+          <div class="field-group">
+            <label for="notas">Notas de sesión</label>
             <textarea
               id="notas"
               name="notas"
+              class="neu-input neu-textarea"
               rows="3"
-              placeholder="Ej. Tempo más lento, cuidar sibilancias en armonías y coros."
+              placeholder="Observaciones de ganancia, EQ o afinación..."
             ></textarea>
           </div>
 
-          <button type="submit" id="btn-guardar" class="btn-primary btn-full">
-            Guardar Preset
+          <button type="submit" id="btn-guardar" class="neu-btn neu-btn-submit">
+            Guardar preset
           </button>
-          <p id="estado-formulario" class="form-feedback" aria-live="polite"></p>
+          <div id="estado-formulario" class="form-message" aria-live="polite"></div>
         </form>
-      </aside>
+      </section>
 
-      <!-- Cuadrícula de Presets en Base de Datos -->
-      <section class="card module-card">
-        <div class="module-title-bar">
-          <h2>RACK DE PRESETS ALMACENADOS (<span id="contador-presets">0</span>)</h2>
-          <span class="rack-screw"></span>
+      <!-- Lista / Cuadrícula de Presets -->
+      <section class="card presets-panel">
+        <div class="card-header presets-header">
+          <div>
+            <h3 class="section-title">Presets registrados</h3>
+            <p class="section-desc">Configuraciones almacenadas en la base de datos.</p>
+          </div>
+          <span class="counter-badge">
+            <strong id="contador-presets">0</strong> presets
+          </span>
         </div>
 
-        <div id="grid-presets" class="presets-grid">
+        <div id="grid-presets" class="presets-stream">
           <div class="empty-state">
-            <p>Sin presets sincronizados en pantalla.</p>
-            <small>Presiona <strong>"Consultar backend y cargar Presets"</strong> arriba para traer los datos desde Render y PostgreSQL.</small>
+            <p>Aún no se han cargado presets.</p>
+            <small>Haz clic en "Consultar backend" para sincronizar tus datos.</small>
           </div>
         </div>
       </section>
-    </section>
+    </div>
   </div>
 
   <script src="app.js"></script>
