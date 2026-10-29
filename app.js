@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000'; // En el Paso 8, cambiar BASE_URL por https://SU-SERVICIO.onrender.com
+const BASE_URL = 'https://backend-laboratorio-arquitectura-de.onrender.com';
 const API_URL = `${BASE_URL}/api/mensaje`;
 
 const btnConsultar = document.getElementById('consultar');
